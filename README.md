@@ -25,10 +25,10 @@ git-san install <repository-address>
 
 Where `<repository-address>` can be:
 
-1. A HTTP/HTTPS URL, ie `https://github.com/co2-git/git-san`
-2. A SSH address, ie `git@github.com:co2-git/git-san`
-3. A Provider address (from supported list of providers), ie `github:co2-git/git-san`
-4. A Vendor Address (if repository hosted in Github), ie `co2-git/git-san`
+1. **HTTP(s) URL**, `https://github.com/co2-git/git-san`
+2. **SSH address**, `git@github.com:co2-git/git-san`
+3. **Provider address** (from supported list of providers), `github:co2-git/git-san`
+4. **Vendor Address** (if repository hosted in Github), `co2-git/git-san`
 
 ## Example with full address
 
@@ -95,6 +95,40 @@ To this command, `git-san` will install the repo and answer with this JSON:
 ```
 
 Note the `tag` attribute and the `version` attribute. The former contains the tag the repository is currently at, and the latter the semantic version declaration for updating.
+
+### Install from specific tag
+
+```bash
+git-san install --tag=0.0.2 co2-git/git-san
+```
+
+### Semantic versioning
+
+You can use semantic versioning:
+
+```bash
+git-san install --tag=~0.0.2 co2-git/git-san
+```
+
+### No semantic versioning
+
+Not every repository use semantic versioning. In this case, you can still specify a tag at install time:
+
+```bash
+git-san install --tag=alpha co2-git/git-san
+```
+
+In this case though, you won't be able to automatically update the repository:
+
+```bash
+git-san update co2-git/git-san
+```
+
+will not do nothing - you have to pass it a new tag name:
+
+```bash
+git-san update --tag=beta co2-git/git-san
+```
 
 ## Commit
 
