@@ -7,11 +7,10 @@ A git repositories manager.
 
 `git-san` is a per-project git repositories dependencies manager CLI utlity. With it, you can install, update and uninstall git repositories. It keeps a small database of the installed dependencies in a file so you can also install from file.
 
-# Install
+# Install git-san
 
 ```bash
 npm install -g git-san
-git-san
 ```
 
 # Install
@@ -23,6 +22,13 @@ Move to your project directory and enter the install command followed by the `re
 ```bash
 git-san install <repository-address>
 ```
+
+Where `<repository-address>` can be:
+
+1. A HTTP/HTTPS URL, ie `https://github.com/co2-git/git-san`
+2. A SSH address, ie `git@github.com:co2-git/git-san`
+3. A Provider address (from supported list of providers), ie `github:co2-git/git-san`
+4. A Vendor Address (if repository hosted in Github), ie `co2-git/git-san`
 
 ## Example with full address
 
@@ -37,6 +43,14 @@ You can use both HTTP(S) or SSH.
 ```bash
 git-san install git@github.com:co2-git/git-san
 ```
+
+## Provider address
+
+This is the list of the supported providers:
+
+1. **github** `git-san install github:<vendor>/<repo>`
+2. **bitbucket** `git-san install bitbucket:<vendor>/<repo>`
+3. **gitlab** `git-san install gitlab:<vendor>/<repo>`
 
 ## Github shortcut
 
@@ -54,7 +68,19 @@ To install dependencies from the database file, just enter:
 git-san install
 ```
 
-### Example output
+# Branch, commit and tag
+
+## Tag and semantic versioning
+
+`git-san` will use semantic versioning if possible. If given a repository URL, it will check for tags and install the latest tag. It then uses semantic versioning to update the repository.
+
+This will install `git-san` latest tag version (let's say 0.0.1):
+
+```bash
+git-san install co2-git/git-san
+```
+
+To this command, `git-san` will install the repo and answer with this JSON:
 
 ```json
 {
@@ -62,11 +88,74 @@ git-san install
 		"provider": "github",
 		"vendor": "co2-git",
 		"repo": "git-san",
-		"commit": "...",
-		"branch": "master",
-		"tag": "..."
+		"tag": "0.0.1",
+		"version": "~0.0.1"
 	}
 }
+```
+
+Note the `tag` attribute and the `version` attribute. The former contains the tag the repository is currently at, and the latter the semantic version declaration for updating.
+
+## Commit
+
+If no tags are found, `git-san` will revert to commit strategy. In this case, it will install the repository from the latest commit from master and save that commit number. This commit number will be used to check for new versions. Any new commit number will be interpreted as a new version.
+
+You can also skip tagging and force using commit strategy such as:
+
+```bash
+git-san install --commit co2-git/git-san
+```
+
+After installing the repository, `git-san` will answer with this JSON:
+
+```json
+{
+	"co2-git/git-san": {
+		"provider": "github",
+		"vendor": "co2-git",
+		"repo": "git-san",
+		"commit": "373e6e2edc594ee632790778cbf94505f1d584bc",
+		"branch": "master"
+	}
+}
+```
+
+## Branch
+
+With the commit strategy, master is the branch by default to install from. You can specify another branch like this:
+
+```bash
+git-san install --commit --branch=dev co2-git/git-san
+```
+
+You will then get this JSON:
+
+```json
+{
+	"co2-git/git-san": {
+		"provider": "github",
+		"vendor": "co2-git",
+		"repo": "git-san",
+		"commit": "373e6e2edc594ee632790778cbf94505f1d584bc",
+		"branch": "dev"
+	}
+}
+```
+
+# Update
+
+View strategies above to see how repositories get updated.
+
+```bash
+git-san update co2-git/git-san
+```
+
+# ls (List)
+
+Invoke the `ls` command to see a list of installed repositories.
+
+```bash
+git-san ls
 ```
 
 # Uninstall
@@ -75,4 +164,15 @@ git-san install
 git-san uninstall co2-git/git-san
 ```
 
-# Update
+# Change
+
+```bash
+# switch to commit strategy
+git-san change --commit co2-git/git-san
+
+# switch to tag strategy
+git-san change --tag co2-git/git-san
+
+# switch to another branch
+git-san change --branch=dev co2-git/git-san
+```
